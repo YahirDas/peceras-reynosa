@@ -4,11 +4,10 @@ import L from 'leaflet'
 import 'leaflet-polylinedecorator'
 import './App.css'
 
-// --- Componente DecoradorFlechas ---
+// --- Componente DecoradorFlechas (Sin cambios) ---
 const DecoradorFlechas = ({ puntos, color }) => {
   const map = useMap();
   const decoratorRef = useRef(null);
-
   useEffect(() => {
     if (puntos && puntos.length > 0) {
       decoratorRef.current = L.polylineDecorator(puntos, {
@@ -23,7 +22,6 @@ const DecoradorFlechas = ({ puntos, color }) => {
     }
     return () => { if (decoratorRef.current) map.removeLayer(decoratorRef.current); };
   }, [puntos, color, map]);
-
   return null;
 };
 
@@ -33,15 +31,17 @@ function App() {
   const [visibles, setVisibles] = useState({});
   const [resaltada, setResaltada] = useState(null);
   const [busqueda, setBusqueda] = useState(""); 
+  
+  // NUEVO: Estado para guardar la ubicación del usuario
+  const [ubicacionUsuario, setUbicacionUsuario] = useState(null);
 
   // Referencia al mapa para poder moverlo
   const [mapa, setMapa] = useState(null); 
 
   useEffect(() => {
-    // Detectamos automáticamente la URL correcta
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-
-    fetch(`${API_URL}/rutas`) // <--- ¡OJO AQUÍ! Usamos las comillas invertidas ` `
+    
+    fetch(`${API_URL}/rutas`)
       .then(res => res.json())
       .then(data => {
         const procesadas = data.map(r => ({ 
@@ -63,11 +63,28 @@ function App() {
     }
   };
 
+  // --- NUEVA FUNCIÓN: GPS ---
+  const encontrarme = () => {
+    if (!mapa) return;
+    
+    mapa.locate().on("locationfound", function (e) {
+      setUbicacionUsuario(e.latlng); // Guardamos la posición
+      mapa.flyTo(e.latlng, 15); // Volamos hacia ahí
+    }).on("locationerror", function (e) {
+      alert("No pudimos acceder a tu ubicación. Asegúrate de dar permisos.");
+    });
+  };
+
   return (
     <div className="app-container">
       <aside className="sidebar">
         <h2>Rutas Reynosa 🚌</h2>
         
+        {/* Botón de GPS */}
+        <button className="btn-gps" onClick={encontrarme}>
+          📍 ¿Dónde estoy?
+        </button>
+
         <input 
           type="text" 
           placeholder="Buscar ruta (ej. Juarez)..." 
@@ -80,16 +97,12 @@ function App() {
           {rutas
             .filter(ruta => ruta.nombre.toLowerCase().includes(busqueda.toLowerCase()))
             .map(ruta => (
-            
-            // --- AQUÍ ESTÁ EL CAMBIO CLAVE ---
-            // Movemos la clase 'activo' y los eventos del mouse al contenedor PADRE
             <div 
               key={ruta.id} 
               className={`ruta-fila ${resaltada === ruta.id ? 'activo' : ''}`}
               onMouseEnter={() => setResaltada(ruta.id)}
               onMouseLeave={() => setResaltada(null)}
             > 
-              {/* El texto maneja el clic del Zoom */}
               <label 
                 className="ruta-item"
                 onClick={() => volarARuta(ruta.coords)}
@@ -98,7 +111,6 @@ function App() {
                 {ruta.nombre}
               </label>
               
-              {/* El checkbox maneja el encendido/apagado */}
               <input 
                 type="checkbox" 
                 className="checkbox-visible"
@@ -114,6 +126,17 @@ function App() {
         <MapContainer center={centroReynosa} zoom={13} style={{height: '100%'}} ref={setMapa}>
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           
+          {/* Marcador del Usuario (Punto Azul) */}
+          {ubicacionUsuario && (
+            <CircleMarker 
+              center={ubicacionUsuario} 
+              radius={8} 
+              pathOptions={{color: 'white', fillColor: '#2980b9', fillOpacity: 1, weight: 3}}
+            >
+              <Popup>¡Estás aquí!</Popup>
+            </CircleMarker>
+          )}
+
           {rutas.filter(r => visibles[r.id]).map(ruta => {
              const esResaltada = resaltada === ruta.id;
              const grosor = esResaltada ? 8 : 5; 
@@ -127,11 +150,17 @@ function App() {
                  />
                  <DecoradorFlechas puntos={ruta.coords} color="white" />
                  
+                 {/* --- AQUÍ ESTÁ LA CORRECCIÓN DE LOS NOMBRES --- */}
                  <CircleMarker center={ruta.coords[0]} radius={6} pathOptions={{color:'white', fillColor:'#27ae60', fillOpacity:1}}>
-                    <Popup>Inicio</Popup>
+                    <Popup>
+                      <b>Inicio:</b><br/>{ruta.nombre}
+                    </Popup>
                  </CircleMarker>
+
                  <CircleMarker center={ruta.coords[ruta.coords.length-1]} radius={6} pathOptions={{color:'white', fillColor:'#c0392b', fillOpacity:1}}>
-                    <Popup>Fin</Popup>
+                    <Popup>
+                      <b>Fin:</b><br/>{ruta.nombre}
+                    </Popup>
                  </CircleMarker>
                </React.Fragment>
              );
