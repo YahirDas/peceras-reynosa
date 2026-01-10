@@ -137,3 +137,37 @@
   height: 100% !important;
   width: 100% !important;
 }
+
+/* --- RESPONSIVIDAD (Mobile) --- */
+@media (max-width: 768px) {
+  /* Cambiamos de fila (lado a lado) a columna invertida (uno sobre otro) */
+  .app-container {
+    flex-direction: column-reverse; 
+  }
+
+  /* La barra lateral ahora ocupa el ancho completo y solo el 35% de alto */
+  .sidebar {
+    width: 100%;
+    height: 35vh; /* 35% de la altura de la pantalla */
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.1); /* Sombra hacia arriba */
+    padding: 15px;
+    z-index: 2000; /* Aseguramos que quede encima del mapa */
+  }
+  
+  /* Ajustes para que el buscador y lista se vean bien en poco espacio */
+  .sidebar h2 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+  
+  .buscador {
+    padding: 8px;
+    margin-bottom: 10px;
+  }
+
+  /* El mapa ocupa el resto de la pantalla (65%) */
+  .map-area {
+    height: 65vh;
+    width: 100%;
+  }
+}
