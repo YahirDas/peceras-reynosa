@@ -86,7 +86,7 @@ function App() {
       setUbicacionUsuario(e.latlng);
       L.popup()
         .setLatLng(e.latlng)
-        .setContent(`📍 Estás aquí (Precisión: ${Math.round(e.accuracy)}m)`)
+        .setContent(`📍 Estás aquí`)
         .openOn(mapa);
     });
 
