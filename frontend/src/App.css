@@ -1,0 +1,139 @@
+/* --- RESET BÁSICO --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* --- LAYOUT PRINCIPAL --- */
+.app-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden; /* Evita scroll doble */
+}
+
+/* --- BARRA LATERAL (SIDEBAR) --- */
+.sidebar {
+  width: 340px; /* Un poquito más ancha para comodidad */
+  height: 100vh;
+  padding: 25px 20px;
+  background: #ffffff;
+  box-shadow: 4px 0 15px rgba(0,0,0,0.05);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar h2 {
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+
+/* --- BUSCADOR --- */
+.buscador {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s ease;
+  background-color: #f9f9f9;
+}
+
+.buscador:focus {
+  border-color: #2196f3;
+  background-color: #fff;
+  box-shadow: 0 0 5px rgba(33, 150, 243, 0.2);
+}
+
+/* --- LISTA DE RUTAS --- */
+.lista-rutas {
+  flex: 1;
+  overflow-y: auto; /* Scroll si hay muchas rutas */
+  padding-right: 5px; /* Espacio para que el scroll no tape nada */
+}
+
+/* --- CADA FILA (CONTENEDOR PADRE) --- */
+/* Aquí aplicamos el estilo para que cubra TEXTO + CHECKBOX */
+.ruta-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  
+  background: #f8f9fa; /* Fondo gris claro por defecto */
+  border-radius: 8px;
+  
+  /* Truco: Borde transparente para evitar saltos al activar */
+  border-left: 5px solid transparent; 
+  
+  transition: all 0.2s ease; /* Animación suave */
+}
+
+/* Efecto al pasar el mouse por TODA la fila */
+.ruta-fila:hover {
+  background: #e9ecef;
+  transform: translateX(5px); /* Pequeño movimiento a la derecha */
+}
+
+/* Estado ACTIVO (cuando el mouse está encima o seleccionada) */
+.ruta-fila.activo {
+  background-color: #e3f2fd; /* Fondo azulito */
+  border-left-color: #2196f3; /* El borde se pinta de azul */
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.15);
+}
+
+/* --- EL NOMBRE DE LA RUTA (LABEL) --- */
+.ruta-item {
+  flex-grow: 1; /* Ocupa todo el espacio posible */
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin: 0;
+  background: transparent; /* Transparente para ver el color de la fila */
+  color: #34495e;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+/* --- PUNTITO DE COLOR --- */
+.color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin-right: 12px; /* Separación del texto */
+  flex-shrink: 0;
+  box-shadow: 0 0 4px rgba(0,0,0,0.2);
+  border: 2px solid white; /* Un borde blanco para que resalte más */
+}
+
+/* --- CHECKBOX --- */
+.checkbox-visible {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: #2196f3; /* Pinta el checkbox de azul */
+  margin-left: 10px;
+}
+
+/* --- ZONA DEL MAPA --- */
+.map-area {
+  flex: 1;
+  height: 100vh;
+  position: relative;
+  background: #e5e3df;
+}
+
+.leaflet-container {
+  height: 100% !important;
+  width: 100% !important;
+}
